@@ -1,10 +1,22 @@
+import os
+import google.generativeai as genai
 from typing import Dict, Any
 
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 class ProductionAgentEngine:
     def __init__(self, tool_gateway: Any, guardrails: Any, max_iterations: int = 5):
         self.tool_gateway = tool_gateway
         self.guardrails = guardrails
         self.max_iterations = max_iterations
+        
+        self.model = genai.GenerativeModel(
+            model_name='gemini-1.5-pro',
+            tools=[
+                self.tool_gateway.gateway_tools.get("database_lookup"),
+                self.tool_gateway.gateway_tools.get("vector_search"),
+                self.tool_gateway.gateway_tools.get("external_api_call")
+            ] if hasattr(self.tool_gateway, 'gateway_tools') else []
+        )
 
     def run_agent_loop(self, user_goal: str, caller_role: str = "standard_agent") -> str:
         is_safe, message = self.guardrails.validate_input(user_goal)
@@ -16,7 +28,6 @@ class ProductionAgentEngine:
 
         while iteration < self.max_iterations:
             iteration += 1
-
             plan = self._generate_plan(current_state)
 
             observation = self.tool_gateway.execute_securely(
@@ -37,6 +48,20 @@ class ProductionAgentEngine:
         return "Agent stopped: Reached max iterations without finishing the goal."
 
     def _generate_plan(self, state: Dict[str, Any]) -> Dict[str, Any]:
+        """Uses Gemini AI to interpret the user goal and select the correct tool dynamically."""
+        try:
+            chat = self.model.start_chat(enable_automatic_function_calling=True)
+            response = chat.send_message(state["goal"])
+            
+            if chat.history and hasattr(chat.history[-1], 'parts'):
+                for part in chat.history[-1].parts:
+                    if fn := getattr(part, 'function_call', None):
+                        tool_name = fn.name
+                        args = dict(fn.args)
+                        return {"tool": tool_name, "args": args}
+        except Exception as e:
+            pass
+
         goal_lower = state["goal"].lower()
         if any(kw in goal_lower for kw in ["database", "employee", "server", "uptime", "count", "metrics", "records"]):
             return {"tool": "database_lookup", "args": {"query": state["goal"]}}

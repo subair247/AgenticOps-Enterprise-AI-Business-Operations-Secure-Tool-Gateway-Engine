@@ -115,10 +115,10 @@ linkStyle 4 stroke:#a78bfa,stroke-width:3px;
 ```
 
 ## 🚀 Key Components
-* **Production Agent Engine** (`backend/core/engine.py`): Drives the autonomous reasoning loop (Plan \(\rightarrow\) Execute \(\rightarrow\) Evaluate \(\rightarrow\) Complete) with dynamic tool routing based on user intent.
+* **Production Agent Engine** (`backend/core/engine.py`): Drives the autonomous reasoning loop using **Native Gemini Function/Tool Calling** (`enable_automatic_function_calling=True`) for intelligent dynamic tool selection.
 * **Secure Tool Gateway** (`backend/core/gateway.py`): Acts as an interception layer enforcing Role-Based Access Control (RBAC) to restrict unauthorized WRITE or sensitive operations.
 * **Security Guardrails** (`backend/core/guardrails.py`): Scans incoming prompts for potential prompt injections and sanitizes outgoing responses for data safety.
-* **Interactive Operations UI** (`frontend/app.py`): A Streamlit-powered control panel offering task execution, live system metrics monitoring, and structured executive summary outputs.
+* **Interactive Operations UI** (`frontend/app.py` & components): A multi-tab Streamlit control panel featuring task execution, **Live System Analytics Dashboard** (`dashboard.py`), and **HITL Governance Panel** (`hitl_panel.py`)[cite: 3].
 
 ## 💻 Technology Stack
 
@@ -128,7 +128,7 @@ Here is the complete technology stack used to build this enterprise-grade AI Bus
 * **Backend & API:** FastAPI for high-performance asynchronous API endpoints, routing, and header-based authentication (`X-API-Key`).
 * **AI & Agent Core:** Custom Python-based Production Agent Engine implementing autonomous reasoning loops (Plan \(\rightarrow\) Execute \(\rightarrow\) Evaluate \(\rightarrow\) Complete) and dynamic tool routing.
 * **Security & Governance:** Secure Tool Gateway enforcing Role-Based Access Control (RBAC) (`standard_agent` vs `restricted_agent`) and Security Guardrails for prompt injection defense and input sanitization.
-* **Data & Services:** Vector Search / RAG knowledge base and PostgreSQL / Mock database for system metrics and operational records.
+* **Data & Services:** Supabase PostgreSQL live database for active metrics and operational records, alongside a table-driven Vector Search / RAG knowledge base.
 * **Deployment & DevOps:** Docker containerization, Git & GitHub version control, and Render cloud hosting.
 
 ## 📁 Project Directory Structure
@@ -209,6 +209,10 @@ ai-ops-agent-platform/
 3. **Challenge: Rigid Single-Tool Routing**
    * **The Problem:** Early iterations routed every user goal strictly to a single vector search tool, limiting operational flexibility.
    * **The Solution:** Built a dynamic intent-parsing engine (`_generate_plan`) that analyzes user goal keywords and intelligently routes execution paths between Vector Search, Database Lookups, and External API Sync tools.
+
+4. **Challenge: Moving from Static Mock Data to Live Cloud Databases & Native Tool Routing**
+   * **The Problem:** Initial versions relied on static hardcoded employee counts and simple keyword-based intent matching.
+   * **The Solution:** Integrated **Supabase PostgreSQL** with asynchronous and synchronous SQLAlchemy sessions (`database/crud.py`), paired with Google Gemini's **Native Tool Declarations** for autonomous, model-driven tool execution.
   
 ## ⚙️ Local Installation & Setup
 

@@ -6,6 +6,7 @@ langchain==0.1.14
 langgraph==0.0.35
 redis==5.0.3
 sqlalchemy==2.0.28
+asyncpg==0.29.0
 psycopg2-binary==2.9.9
 chromadb==0.4.24
 streamlit==1.32.0

@@ -6,7 +6,7 @@ An enterprise-grade autonomous workflow system featuring a secure tool gateway, 
 ## 🏗️ System Architecture
 The platform follows a decoupled, secure client-server architecture separating the Streamlit operational frontend from the FastAPI backend engine, protected by a strict middleware security layer.
 
-```Mermaid
+```mermaid
 
 graph TD
 
@@ -222,7 +222,7 @@ ai-ops-agent-platform/
    ```
 2. **Clone the Repository:**
    ```bash
-   git clone https://github.com/your-username/ai-ops-agent-platform.git
+   git clone https://github.com/subair247/AgenticOps-Enterprise-AI-Business-Operations-Secure-Tool-Gateway-Engine.git
    cd ai-ops-agent-platform
    ```
 3. **Install Dependencies:**

@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, Any
-from database.session import SessionLocal
-from database.crud import fetch_live_system_metrics, search_knowledge_base
+from backend.database.session import SessionLocal
+from backend.database.crud import fetch_live_system_metrics, search_knowledge_base
 
 logger = logging.getLogger(__name__)
 
